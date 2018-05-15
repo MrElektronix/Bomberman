@@ -1,35 +1,36 @@
 let canvas;
-let grid;
+let bombermangrid;
 let player;
 
 
-let Start = ()=>{
-    canvas = new Canvas(800, 600);
+const Start = ()=>{
+    canvas = new Canvas(600, 600);
     canvas.Create();
 
-    grid = new Grid(20, 15, 40, 40);
-    grid.Create();
-    grid.CreateBorder();
-    grid.CreateWalkablePath();
+    bombermangrid = new BombermanGrid(canvas._canvas, 40, 40);
+    bombermangrid.Create();
+    bombermangrid.CreateBorder();
+    bombermangrid.CreateWalkableField();
 
-    player = new Player(grid.tileWidth, grid.tileHeight, grid.tileWidth, grid.tileHeight, "blue");
+    player = new Player(bombermangrid.tileWidth, bombermangrid.tileHeight, bombermangrid.tileWidth, bombermangrid.tileHeight, "blue");
     player.speed = 4;
     player.Create();
+    bombermangrid.CreateUnbreakableBlocks();
     Update();
 }
 
-let Update = ()=>{
+const Update = ()=>{
     Keyboard();
     canvas.Clear();
-    grid.Draw(canvas.context);
+    bombermangrid.Draw(canvas.context);
     player.Draw(canvas.context);
 
-    grid.CheckBorder(player.playerObject);
+    bombermangrid.CheckBorder(player.playerObject);
     requestAnimationFrame(Update);
 }
 
 
-let Keys = {
+const Keys = {
     w: false, 
     a: false,
     s: false,
@@ -74,7 +75,7 @@ document.addEventListener("keydown", (event)=>{
 });
 */
 
-let Keyboard = ()=>{
+const Keyboard = ()=>{
     if (Keys.w) {player.playerObject.y -= player.speed;}
     if (Keys.a) {player.playerObject.x -= player.speed;}
     if (Keys.s) {player.playerObject.y += player.speed;}
