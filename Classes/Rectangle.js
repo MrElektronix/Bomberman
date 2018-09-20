@@ -1,6 +1,6 @@
 class Rectangle extends Object{
     constructor(x, y, width, height, color){
-        super(x,y,width,height);
+        super(x,y,width,height, color);
         this.color = color || "black";
         this.lineWidth;
     }

@@ -3,6 +3,8 @@ class Player extends Rectangle{
         super(x,y,width,height, color);
         this.playerObject;
         this.speed;
+        this.bombs = [];
+        this.bombAmount = 3;
     }
 
     Create(){

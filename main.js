@@ -1,9 +1,30 @@
 let canvas;
 let bombermangrid;
 let player;
+let bomb;
+let spacebarUp = true;
+let value;
 
+const keyState = {};
+window.addEventListener("keydown", (e)=>{
+    keyState[e.keyCode || e.which] = true;
+});
+
+window.addEventListener("keyup", (e)=>{
+    keyState[e.keyCode || e.which] = false;
+    spacebarUp = true;
+});
+
+let Keys = {
+    w: 87,
+    a: 65,
+    s: 83,
+    d: 68,
+    spacebar: 32
+}
 
 const Start = ()=>{
+    value = 2;
     canvas = new Canvas(600, 600);
     canvas.Create();
 
@@ -11,11 +32,18 @@ const Start = ()=>{
     bombermangrid.Create();
     bombermangrid.CreateBorder();
     bombermangrid.CreateWalkableField();
-
-    player = new Player(bombermangrid.tileWidth, bombermangrid.tileHeight, bombermangrid.tileWidth, bombermangrid.tileHeight, "blue");
-    player.speed = 4;
-    player.Create();
     bombermangrid.CreateUnbreakableBlocks();
+
+    player = new Player(bombermangrid.tileWidth, bombermangrid.tileHeight, 30, 30, "blue");
+    player.speed = 3.5;
+    player.Create();
+   
+
+    for (let i = 0; i < player.bombAmount; i++){
+        bomb = new Bomb(20, 0, 20, 20, "grey");
+        bomb.Create();
+        player.bombs.push(bomb);
+    }
     Update();
 }
 
@@ -23,39 +51,18 @@ const Update = ()=>{
     Keyboard();
     canvas.Clear();
     bombermangrid.Draw(canvas.context);
-    player.Draw(canvas.context);
-
     bombermangrid.CheckBorder(player.playerObject);
+    player.Draw(canvas.context);
+    for (let b = 0; b < player.bombAmount; b++){
+        player.bombs[b].Draw(canvas.context);
+    }
+
+    if (bombermangrid.CheckUnbreakableBlocks(player.playerObject)){
+        //player.speed = 0;
+    }
     requestAnimationFrame(Update);
 }
 
-
-const Keys = {
-    w: false, 
-    a: false,
-    s: false,
-    d: false
-}
-
-window.onkeydown = (e)=>{
-    let keyCode = e.key;
-    //e.preventDefault();
-
-    if (keyCode === "w") {Keys.w = true;}
-    if (keyCode === "a") {Keys.a = true;}
-    if (keyCode === "s") {Keys.s = true;}
-    if (keyCode === "d") {Keys.d = true;}
-}
-
-window.onkeyup = (e)=>{
-    let keyCode = e.key;
-    //e.preventDefault();
-
-    if (keyCode === "w") {Keys.w = false;}
-    if (keyCode === "a") {Keys.a = false;}
-    if (keyCode === "s") {Keys.s = false;}
-    if (keyCode === "d") {Keys.d = false;}
-}
 
 /*
 document.addEventListener("keydown", (event)=>{
@@ -76,10 +83,22 @@ document.addEventListener("keydown", (event)=>{
 */
 
 const Keyboard = ()=>{
-    if (Keys.w) {player.playerObject.y -= player.speed;}
-    if (Keys.a) {player.playerObject.x -= player.speed;}
-    if (Keys.s) {player.playerObject.y += player.speed;}
-    if (Keys.d) {player.playerObject.x += player.speed;}
+
+    if (keyState[Keys.w]){player.playerObject.y -= player.speed;}
+    if (keyState[Keys.a]){player.playerObject.x -= player.speed;}
+    if (keyState[Keys.s]){player.playerObject.y += player.speed;}
+    if (keyState[Keys.d]){player.playerObject.x += player.speed;}
+    if (keyState[Keys.spacebar] && spacebarUp){
+        spacebarUp = false;
+
+        if (value != -1) {
+            player.bombs[value].bombObject.x = player.playerObject.x + ((player.playerObject.width ) / 6);
+            player.bombs[value].bombObject.y = player.playerObject.y + ((player.playerObject.height) / 6);
+            player.bombs[value].bombObject.color = "white";1
+
+            value -= 1;
+        }
+    }
 }
 
 
